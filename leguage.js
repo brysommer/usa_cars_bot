@@ -29,7 +29,14 @@ const keyboards = {
     ['📅2015 - 2020', '📅2020 - 2023']],
     calculation: { inline_keyboard: [
         [{ text: 'Замовити прорахунок', callback_data: '/calculation' }],
-    ]}
+    ]},
+    sendContact: {
+        reply_markup: {
+            keyboard: [[{ text: 'Відправити контакт', request_contact: true }]],
+            resize_keyboard: true,
+            one_time_keyboard: true,
+        }
+    }
 }  
 
 const submitYear = async (text, chatId) => {
