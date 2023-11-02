@@ -76,7 +76,13 @@ export const anketaListiner = async() => {
             const filteredCarMessages = await filterCars(budget, year);
 
             if (filteredCarMessages.length === 0) {
-              await bot.sendMessage(chatId, 'Sorry no data');
+              await bot.sendMessage(chatId, phrases.nodata, {
+                reply_markup: {
+                    keyboard: [[{ text: 'Відправити контакт', request_contact: true }]],
+                    resize_keyboard: true,
+                    one_time_keyboard: true,
+                }
+            });
             };
 
             const formattedMessages = filteredCarMessages.map((lot, index) => {
