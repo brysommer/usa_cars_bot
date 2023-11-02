@@ -47,7 +47,10 @@ const submitBudget = async (text, chatId) => {
     const removedEmoji = text.replace('💰', '');
     budget = removedEmoji;
     bot.sendMessage(chatId, phrases.yearQuestion, {
-        reply_markup: {keyboard: keyboards.surveyQuestion2}})
+        reply_markup: {keyboard: 
+            keyboards.surveyQuestion2,
+            resize_keyboard: true,
+            one_time_keyboard: true,}})
 };
 
 export {

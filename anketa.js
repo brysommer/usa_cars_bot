@@ -25,12 +25,18 @@ export const anketaListiner = async() => {
         switch (msg.text) {
             case '/start':
                 bot.sendMessage(chatId, phrases.greetings, {
-                    reply_markup: {keyboard: keyboards.startingKeyboard}})
+                    reply_markup: {
+                      keyboard: keyboards.startingKeyboard,
+                      resize_keyboard: true,
+                      one_time_keyboard: true,}})
                 break;
             
             case '🚙 Підібрати авто':
                 bot.sendMessage(chatId, phrases.bugetQuestion, {
-                    reply_markup: {keyboard: keyboards.surveyQuestion1}})
+                    reply_markup: {keyboard: 
+                      keyboards.surveyQuestion1,
+                      resize_keyboard: true,
+                      one_time_keyboard: true,}})
                 break;
             
             case '💰7000$ - 10000$':
