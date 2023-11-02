@@ -1,5 +1,4 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { getSpreadsheetData } from "./filedata.js";
 import { anketaListiner } from './anketa.js';
 import { dataBot } from './values.js';
 import axios from 'axios';
