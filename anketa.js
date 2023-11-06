@@ -6,15 +6,53 @@ import { phrases, keyboards, submitBudget, submitYear, budget, year } from './le
 
 let customerPhone;
 let customerName;
+let cars;
+let carsData;
 
-export const anketaListiner = async() => {
-    bot.on('callback_query', (query) => {
+const sendMessages = async (cars, numberofcar, pictures, chatId) => {
+    numberofcar = numberofcar * 1;
+    console.log(`Число: ${numberofcar}`);
+    console.log(cars[numberofcar]);
+
+    try {
+        await bot.sendMessage(chatId, cars[numberofcar], { reply_markup: 
+            keyboards.calculation
+        });      
+    } catch (error) {
+        console.log(error)
+    }
+    if (!cars[numberofcar]) return;
+  try {
+      console.log(`Link: ${pictures[numberofcar][6]}`)
+      const response = await axios.get(pictures[numberofcar][6], { responseType: 'arraybuffer' });
+      await bot.sendPhoto(chatId, Buffer.from(response.data), { reply_markup: 
+          { inline_keyboard: [
+              [
+              { text: '<= Попередня', callback_data: numberofcar - 1 },
+              { text: 'Наступна =>', callback_data: numberofcar + 1 }],
+          ]},
+      });
+  } catch (error) {
+      console.log(error);
+  }
+};
+
+
+export const anketaListiner = async () => {
+    bot.on('callback_query', async (query) => {
         const callback = query.data;
         const chatId = query.message.chat.id;
-
+        console.log(JSON.stringify(carsData))
+        if (!carsData) return;
         if (callback == '/calculation') {
             bot.sendMessage(dataBot.channelId, `CALCULATION: ${customerPhone}, ${customerName}`);
             bot.sendMessage(chatId, `✅Вашу заявку на прорахунок прийнято🙌`);
+        } else if (callback == carsData.length) {
+            await sendMessages(cars, 0, carsData, chatId);
+        } else if (callback < 0) {
+            await sendMessages(cars, carsData.length -1, carsData, chatId);
+        } else if (callback >= 0) {
+            await sendMessages(cars, callback, carsData, chatId);
         }
     });
 
@@ -42,7 +80,7 @@ export const anketaListiner = async() => {
             case '💰7000$ - 10000$':
             case '💰10000$ - 15000$':
             case '💰15000$ - 20000$':
-            case '💰20000$ - 30000$':
+            case '💰20000$ - 50000$':
                 await submitBudget(text, chatId);
                 break;
 
@@ -67,13 +105,13 @@ export const anketaListiner = async() => {
 
             await bot.sendMessage(dataBot.channelId, ` ${customerPhone} ${customerName} ${budget} ${year}`);
                 
-            const filteredCarMessages = await filterCars(budget, year);
+            carsData = await filterCars(budget, year);
 
-            if (filteredCarMessages.length === 0) {
+            if (carsData.length === 0) {
               await bot.sendMessage(chatId, phrases.nodata, keyboards.sendContact);
             };
 
-            const formattedMessages = filteredCarMessages.map((lot, index) => {
+            cars = carsData.map((lot, index) => {
                 const rowText = 
                     `🚗 Варіант Авто ${index + 1}\n` +
                     `✅ Марка/модель: ${lot[0]}\n` +
@@ -81,20 +119,13 @@ export const anketaListiner = async() => {
                     `✅ Привід: ${lot[2]}\n` +
                     `✅ Пробіг: ${lot[3]}\n` +
                     `✅ Рік: ${lot[4]}\n` +
-                    `💲 Ціна в США: ${lot[5]}\n`;
+                    `💵 Вартість розмитненого авто у Львові: ${lot[5]}\n`;
                     
                 return rowText;
             });
 
-            async function sendMessages() {
-              for (let index = 0; index < formattedMessages.length; index++) {
-                  await bot.sendMessage(chatId, formattedMessages[index], { reply_markup: keyboards.calculation });
-                  const response = await axios.get(filteredCarMessages[index][6], { responseType: 'arraybuffer' });
-                  await bot.sendPhoto(chatId, Buffer.from(response.data));
-              }
-            };
 
-            sendMessages();
+            await sendMessages(cars, 0, carsData, chatId);
         }
     })
 }
