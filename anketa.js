@@ -1,18 +1,18 @@
-import bot from "./app.js";
+import { bot } from "./app.js";
 import { dataBot } from './values.js';
 import axios from 'axios';
 import { filterCars } from './filter.js';
 import { phrases, keyboards, submitBudget, submitYear, budget, year } from './leguage.js';
+import fs from 'fs';
 
 let customerPhone;
 let customerName;
 let cars;
 let carsData;
+let customers = [];
 
 const sendMessages = async (cars, numberofcar, pictures, chatId) => {
     numberofcar = numberofcar * 1;
-    console.log(`Число: ${numberofcar}`);
-    console.log(cars[numberofcar]);
 
     try {
         await bot.sendMessage(chatId, cars[numberofcar], { reply_markup: 
@@ -58,10 +58,15 @@ export const anketaListiner = async () => {
 
     bot.on('message', async (msg) => {
         let chatId = msg.chat.id;
-        const text = msg.text;   
+        const text = msg.text; 
+        const isUser = customers.find((item) => { item == chatId });  
 
         switch (msg.text) {
             case '/start':
+                if (!isUser) {
+                    customers.push(chatId);
+                    fs.writeFileSync('./users.txt', JSON.stringify(customers));
+                }
                 bot.sendMessage(chatId, phrases.greetings, {
                     reply_markup: {
                       keyboard: keyboards.startingKeyboard,
@@ -123,8 +128,6 @@ export const anketaListiner = async () => {
                     
                 return rowText;
             });
-
-
             await sendMessages(cars, 0, carsData, chatId);
         }
     })

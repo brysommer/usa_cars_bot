@@ -1,4 +1,4 @@
-import bot from "./app.js";
+import { bot } from "./app.js";
 
 let customerPhone;
 let customerName;
