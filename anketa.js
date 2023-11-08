@@ -42,7 +42,9 @@ export const anketaListiner = async () => {
     bot.on('callback_query', async (query) => {
         const callback = query.data;
         const chatId = query.message.chat.id;
-        console.log(JSON.stringify(carsData))
+        if (callback == 'offer') {
+            await bot.sendMessage(chatId, phrases.callback, keyboards.sendContact);
+        }
         if (!carsData) return;
         if (callback == '/calculation') {
             bot.sendMessage(dataBot.channelId, `CALCULATION: ${customerPhone}, ${customerName}`);
@@ -53,7 +55,7 @@ export const anketaListiner = async () => {
             await sendMessages(cars, carsData.length -1, carsData, chatId);
         } else if (callback >= 0) {
             await sendMessages(cars, callback, carsData, chatId);
-        }
+        }  
     });
 
     bot.on('message', async (msg) => {
@@ -102,9 +104,9 @@ export const anketaListiner = async () => {
         if (msg.contact) {
             customerPhone = msg.contact.phone_number;
             customerName = msg.contact.first_name;
-
+            
             if(!(budget || year)) {
-              bot.sendMessage(dataBot.channelId, `Callback: ${customerPhone, customerName}`);
+              bot.sendMessage(dataBot.channelId, `Callback: ${customerPhone} ${customerName}`);
               return;
             };
 
