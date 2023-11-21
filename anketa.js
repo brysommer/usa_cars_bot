@@ -23,7 +23,6 @@ const sendMessages = async (cars, numberofcar, pictures, chatId) => {
     }
     if (!cars[numberofcar]) return;
   try {
-      console.log(`Link: ${pictures[numberofcar][6]}`)
       const response = await axios.get(pictures[numberofcar][6], { responseType: 'arraybuffer' });
       await bot.sendPhoto(chatId, Buffer.from(response.data), { reply_markup: 
           { inline_keyboard: [
@@ -116,6 +115,7 @@ export const anketaListiner = async () => {
 
             if (carsData.length === 0) {
               await bot.sendMessage(chatId, phrases.nodata, keyboards.sendContact);
+              return;
             };
 
             cars = carsData.map((lot, index) => {
