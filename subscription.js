@@ -25,6 +25,7 @@ export const subscription = () => {
 
                 const data = fs.readFileSync('./users.txt');
                 const users = JSON.parse(data);
+                if (data.length === 0) return;
 
                 const groupSize = 10;
                 for (let i = 0; i < users.length; i += groupSize) {
@@ -35,12 +36,11 @@ export const subscription = () => {
                         const response = await axios.get(offer[6], { responseType: 'arraybuffer' });
                         await bot.sendMessage(el, offer[7] );
                         await bot.sendPhoto(chatId, Buffer.from(response.data));
-                        await bot.sendMessage(el, offerMessage , { reply_markup: { inline_keyboard: [[{ text: offer[9], callback_data: `offer` }]] } });
-                        await bot.sendMessage(el, offer[8] );
+                        await bot.sendMessage(el, offerMessage , { reply_markup: { inline_keyboard: [[{ text: offer[8], callback_data: `offer` }]] } });
 
                       } catch (error) {
-
-                        console.log(error);
+                        console.log(`USERID: ${el}`);
+                        console.log(error.response.body);
 
                       }
                     });

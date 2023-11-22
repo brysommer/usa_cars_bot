@@ -60,13 +60,18 @@ export const anketaListiner = async () => {
     bot.on('message', async (msg) => {
         let chatId = msg.chat.id;
         const text = msg.text; 
-        const isUser = customers.find((item) => { item == chatId });  
+        const isUser = customers.find((item) =>  item == chatId );  
 
         switch (msg.text) {
             case '/start':
                 if (!isUser) {
-                    customers.push(chatId);
-                    fs.writeFileSync('./users.txt', JSON.stringify(customers));
+                    const data = fs.readFileSync('./users.txt');
+                    const users = JSON.parse(data);
+                    const isUserInDb = users.find((item) => item == chatId );
+                    if (!isUserInDb) {
+                        customers.push(chatId);
+                        fs.writeFileSync('./users.txt', JSON.stringify(customers));    
+                    }
                 }
                 bot.sendMessage(chatId, phrases.greetings, {
                     reply_markup: {
